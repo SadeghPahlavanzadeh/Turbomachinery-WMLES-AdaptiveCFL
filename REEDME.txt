@@ -1,0 +1,27 @@
+# PyFluent WMLES Adaptive Fluctuation & Convergence Monitor
+
+
+An advanced, automated **PyFluent** Jupyter Notebook workflow designed for turbomachinery simulations. This repository provides a robust framework to transition from a steady-state baseline to an unsteady **Wall-Modeled LES (WMLES)**, featuring an intelligent adaptive time-stepping loop governed by Courant number (CFL) bounds, spectral Fast Fourier Transform (FFT) validation, and global physical convergence assurance checks.
+
+---
+
+## Engineering Objectives & Capabilities
+
+In turbomachinery simulations, capturing unsteadiness and pressure fluctuations is vital for predicting blade forced response, high-cycle fatigue, and vibration risks. This workflow automates the entire monitoring and validation pipeline:
+
+* **Automated Steady-to-Transient Transition:** Initializes via a converged $k-\omega$ SST run, automatically identifies critical high/low-pressure gradient zones, and deploys localized point probes.
+* **CFL-Driven Initialization:** Automatically queries domain velocities and minimum cell dimensions to compute an initial WMLES time step targeting a safe Courant number ($0.2 \le \text{CFL} \le 0.5$).
+* **Adaptive Time-Step Doubling ($dt \times 2$):** Safely scales up time steps in successive blocks to minimize computational cost while enforcing strict safety gates:
+  * **CFL Constraint:** Ensures maximum Courant number remains strictly $\le 1.0$.
+  * **Temporal Resolution:** Enforces **at least 100 time steps per cycle** for the dominant fluctuation frequency.
+* **Spectral Fidelity Verification:** Employs an internal **FFT algorithm** after each scaling step to verify that the exact same dominant frequency is captured without phase distortion or aliasing.
+* **Global Conservation Checks:** Validates physical stability at each step by monitoring net mass balance, energy/heat flux, and rotor torque convergence.
+
+---
+
+## Important Scope & Prerequisites
+
+> [!IMPORTANT]
+> **Scope & Mesh Requirements:** 
+> * This repository focuses **strictly on parameter fluctuations, data extraction, and numerical convergence automation**. It does not cover geometry creation or base meshing.
+> * The underlying mesh **must** be pre-built to satisfy strict LES near-wall resolution requirements. Running this workflow on a coarse RANS-grade mesh will lead to unphysical turbulent dissipation.
